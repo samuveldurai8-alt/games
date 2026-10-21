@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: #FFF8FC;
+    color: #382A4A;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, .font-heading {
+    font-family: 'Quicksand', 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+}
+
+@keyframes floatPetal {
+  0% {
+    transform: translateY(-20px) rotate(0deg) translateX(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.8;
+  }
+  85% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(105vh) rotate(360deg) translateX(80px);
+    opacity: 0;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(247, 182, 210, 0.4), 0 0 30px rgba(232, 223, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(247, 182, 210, 0.7), 0 0 45px rgba(232, 223, 255, 0.6);
+  }
+}
+
+@keyframes heartFloat {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s infinite ease-in-out;
+}
+
+.animate-heart-float {
+  animation: heartFloat 2.5s infinite ease-in-out;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 228, 239, 0.7);
+}
+
+.glass-card-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(139, 117, 201, 0.15);
+}
+
+/* Custom romantic scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FFF8FC;
+}
+::-webkit-scrollbar-thumb {
+  background: #F7B6D2;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8B75C9;
+}

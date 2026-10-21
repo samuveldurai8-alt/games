@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny all access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    match /rooms/{roomId} {
+      // Allow get and list for authenticated users so players can find rooms by code and listen to their active room
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+
+      // Create: Host must be current user and start as sole player
+      allow create: if isSignedIn()
+        && request.resource.data.hostUid == request.auth.uid
+        && request.resource.data.playerUids.size() == 1
+        && request.resource.data.playerUids[0] == request.auth.uid;
+
+      // Update: Either existing room player or second player joining an open seat
+      allow update: if isSignedIn() && (
+        (request.auth.uid in resource.data.playerUids) ||
+        (resource.data.playerUids.size() < 2 && request.resource.data.playerUids.size() == 2 && request.resource.data.playerUids[1] == request.auth.uid)
+      );
+
+      // Delete: Only host can close/delete room
+      allow delete: if isSignedIn() && resource.data.hostUid == request.auth.uid;
+
+      // Subcollection: Real-time room chat
+      match /chat/{messageId} {
+        allow read: if isSignedIn() && (request.auth.uid in get(/databases/$(database)/documents/rooms/$(roomId)).data.playerUids);
+        allow create: if isSignedIn()
+          && request.resource.data.senderUid == request.auth.uid
+          && (request.auth.uid in get(/databases/$(database)/documents/rooms/$(roomId)).data.playerUids);
+        allow update, delete: if false;
+      }
+
+      // Subcollection: Match history
+      match /history/{recordId} {
+        allow read: if isSignedIn() && (request.auth.uid in get(/databases/$(database)/documents/rooms/$(roomId)).data.playerUids);
+        allow create, update: if isSignedIn() && (request.auth.uid in get(/databases/$(database)/documents/rooms/$(roomId)).data.playerUids);
+        allow delete: if isSignedIn() && (request.auth.uid in get(/databases/$(database)/documents/rooms/$(roomId)).data.playerUids);
+      }
+
+      // Subcollection: Shared memories and date blueprints
+      match /memories/{memoryId} {
+        allow read: if isSignedIn() && (request.auth.uid in get(/databases/$(database)/documents/rooms/$(roomId)).data.playerUids);
+        allow create, update: if isSignedIn() && (request.auth.uid in get(/databases/$(database)/documents/rooms/$(roomId)).data.playerUids);
+        allow delete: if isSignedIn() && (request.auth.uid in get(/databases/$(database)/documents/rooms/$(roomId)).data.playerUids);
+      }
+    }
+  }
+}

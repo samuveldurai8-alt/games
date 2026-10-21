@@ -1,0 +1,6 @@
+{
+  "name": "LOVEVERSE — Just Us Two",
+  "description": "A real-time private multiplayer gaming universe for two people. Play romantic mini-games, truth or dare, compatibility quizzes, and shared adventures.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

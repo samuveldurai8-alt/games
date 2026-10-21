@@ -1,0 +1,84 @@
+{
+  "entities": {
+    "Room": {
+      "title": "Room",
+      "description": "A private multiplayer room for exactly two players",
+      "type": "object",
+      "properties": {
+        "roomId": { "type": "string", "maxLength": 64 },
+        "roomCode": { "type": "string", "maxLength": 8 },
+        "hostUid": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["waiting", "ready", "in_game", "closed"] },
+        "playerUids": { "type": "array", "description": "Array of max 2 player UIDs" },
+        "players": { "type": "object", "description": "Map of player profile data keyed by UID" },
+        "activeGame": { "type": "string", "maxLength": 64 },
+        "gameState": { "type": "object", "description": "Game-specific state payload" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "lastActivityAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["roomId", "roomCode", "hostUid", "status", "playerUids"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "A chat message or reaction between the two players in a room",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "senderUid": { "type": "string", "maxLength": 128 },
+        "senderName": { "type": "string", "maxLength": 32 },
+        "text": { "type": "string", "maxLength": 500 },
+        "emoji": { "type": "string", "maxLength": 16 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "senderUid", "senderName", "createdAt"]
+    },
+    "GameRecord": {
+      "title": "GameRecord",
+      "description": "Match history summary of a completed game in the room",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "gameId": { "type": "string", "maxLength": 64 },
+        "gameTitle": { "type": "string", "maxLength": 64 },
+        "winnerUid": { "type": "string", "maxLength": 128 },
+        "scores": { "type": "object" },
+        "summary": { "type": "string", "maxLength": 300 },
+        "completedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "gameId", "gameTitle", "completedAt"]
+    },
+    "SavedMemory": {
+      "title": "SavedMemory",
+      "description": "Saved memory or dream date or favorite answer preserved by the couple",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "type": { "type": "string", "maxLength": 32 },
+        "title": { "type": "string", "maxLength": 100 },
+        "content": { "type": "object" },
+        "creatorUid": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "type", "title", "creatorUid", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/rooms/{roomId}": {
+      "schema": { "$ref": "Room" },
+      "description": "Private room document synchronized between two players"
+    },
+    "/rooms/{roomId}/chat/{messageId}": {
+      "schema": { "$ref": "ChatMessage" },
+      "description": "Real-time room chat messages"
+    },
+    "/rooms/{roomId}/history/{recordId}": {
+      "schema": { "$ref": "GameRecord" },
+      "description": "Match history and completed game records"
+    },
+    "/rooms/{roomId}/memories/{memoryId}": {
+      "schema": { "$ref": "SavedMemory" },
+      "description": "Saved couple memories, date plans, and milestone cards"
+    }
+  }
+}
